@@ -1,0 +1,18 @@
+# Exact JupyterLab server + map-frontend stack from the environment verified
+# to render every course notebook with zero CDN requests (Windows + Linux).
+# Install into ONE venv and run `jupyter lab` from that venv — do not mix
+# with a system/image-provided JupyterLab.
+jupyterlab==4.6.3
+jupytergis==0.16.2
+yjs-widgets==0.6.0
+jupyter-collaboration==4.4.2
+jupyter-docprovider==2.4.2
+jupyter-server-ydoc==2.4.2
+jupyter-collaboration-ui==2.4.2
+pycrdt==0.13.1
+pycrdt-websocket==0.16.2
+ipywidgets==8.1.9
+jupyterlab-widgets==3.0.17
+widgetsnbextension==4.0.16
+sidecar==0.8.1
+jupyterlab-tour==4.0.1

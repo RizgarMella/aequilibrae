@@ -87,28 +87,50 @@ kernel switching.
 
 ---
 
-## Phase 3 — server-side jupytergis
+## Phase 3 — the Jupyter server: run it from the venv
 
-The Jupyter *server* (system Python on Cloud Workstations) must also have
-jupytergis so its extensions are served:
+The decisive lesson from the field: do **not** rely on the workstation
+image's preinstalled JupyterLab for the map notebooks. Its build and
+configuration differ from the verified stack in ways that surface as
+maps degrading to a text repr and CDN fallback requests. Instead, install
+the exact verified server stack into the venv and run Lab from there:
 
 ```bash
-/usr/bin/python -m pip install --break-system-packages "jupytergis==0.16.2"
-source ~/aeq-env/bin/activate && pip install "jupytergis==0.16.2" jupyterlab
+source ~/aeq-env/bin/activate
+pip install -r ~/aequilibrae/vendor/server-requirements.txt
+cd ~/aequilibrae/notebooks
+jupyter lab --no-browser --port 8890
 ```
 
-If `jupyter labextension list` later flags an `@jupyter/ydoc` version
-conflict (an X against collaboration/docprovider), upgrade those on the
-server side: `/usr/bin/python -m pip install --break-system-packages -U
-jupyter-collaboration`.
+Open port 8890 through the workstation's port-forward/preview URL (Cloud
+Workstations exposes forwarded ports from its toolbar). Everything —
+server, frontend extensions, kernel — now comes from one venv with pinned,
+mutually-consistent versions: the same set verified to make zero CDN
+requests.
 
-**Check:** `jupyter labextension list 2>&1 | grep -E "jupytergis|widgets|yjs"`
-shows `@jupytergis/jupytergis-core`, `-lab`, `-qgis` 0.16.2 and
-`@jupyter-widgets/jupyterlab-manager` — all `OK`, no `X`.
+**Check:** `jupyter labextension list` (venv active) shows
+`@jupytergis/jupytergis-core`, `-lab`, `-qgis` 0.16.2,
+`@jupyter-widgets/jupyterlab-manager` 5.0.16 and `yjs-widgets`.
+Ignore red X / "not compatible" marks against `yjs-widgets`,
+`@jupyter/collaboration-extension` and `@jupyter/docprovider-extension` —
+the verified-working environment shows exactly the same marks; they are
+metadata noise from the compatibility checker, not real failures.
 
----
+<details><summary>Fallback: using the image's JupyterLab anyway</summary>
 
-## Phase 4 — vendored frontend (the CDN fix)
+If you must use the preinstalled Lab (server in system Python), mirror the
+pins there too — `/usr/bin/python -m pip install --break-system-packages -r
+~/aequilibrae/vendor/server-requirements.txt` — and continue with Phase 4.
+This is the configuration that has repeatedly misbehaved; prefer the venv
+server.
+
+</details>
+
+## Phase 4 — vendored frontend (only for the image-Lab fallback)
+
+Running the server from the venv (Phase 3) already serves every frontend
+asset same-origin — this phase is only needed on the image-Lab fallback
+path, or if a future pip upgrade breaks the venv's extension set.
 
 Networks that block unpkg.com break map rendering in a specific way:
 `GISDocument()` shows only its text repr, and DevTools shows blocked unpkg
@@ -178,4 +200,6 @@ alongside the Phase 3 set, served from `~/.local/share/jupyter`.
 | Map renders but a layer listed in the panel draws nothing / only first layers appear | oversized layer payload silently dropped by the notebook sync | already fixed in the course notebooks (coordinates quantized, backdrops merged) — `git pull` |
 | Maps lack colours / "unsupported symbology" | jupytergis 0.16 renders from legacy flat-styles only | already fixed in the notebooks' shared `add_gdf` helper — `git pull` |
 | Notebook edits on disk not appearing in the browser | JupyterLab collaborative store serving a cached copy | close the tab, reopen; stubborn cases: stop server, delete `.jupyter_ystore.db` in the notebooks folder, restart |
+| Red X / "not compatible" against `yjs-widgets`, `collaboration-extension`, `docprovider-extension` | compatibility-checker metadata noise | ignore — the verified-working environment shows the same marks |
+| Object repr persists; console shows `No provider for: yjs-widgets:IJupyterYWidgetManager` or `Exception opening new comm` | the notebook-renderer plugin failed to activate in the server's frontend | run the server from the venv (Phase 3) so server+frontend+kernel versions match |
 | Everything ran yesterday, broken after a pip upgrade | upgrade clobbered frontend copies | re-run Phase 4 script (idempotent), restart, hard-refresh |
