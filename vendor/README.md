@@ -1,3 +1,18 @@
+# Vendored assets
+
+**Current:** the notebook course renders maps with **lonboard** (offline
+WebGL via ipywidgets). Two files here support that:
+
+- `jupytergis-assets/parquet_wasm_bg.wasm` - lonboard's parquet decoder,
+  vendored so no CDN is needed; applied by `patch-lonboard-offline.py`.
+- `patch-lonboard-offline.py` - inlines the wasm into the installed
+  lonboard (idempotent; re-run after lonboard upgrades).
+
+Everything below this line concerns the **abandoned jupytergis stack** and
+is kept for reference only.
+
+---
+
 # Vendored JupyterLab frontend assets
 
 `jupytergis-assets/labextensions.tar.gz` contains the complete set of

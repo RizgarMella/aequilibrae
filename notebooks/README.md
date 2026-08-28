@@ -1,7 +1,7 @@
 # AequilibraE transport-modeling notebooks
 
 A complete, hands-on transport modeling course built on AequilibraE's bundled example
-models, with interactive [JupyterGIS](https://jupytergis.readthedocs.io) maps.
+models, with interactive, fully offline WebGL maps (lonboard).
 
 | # | Notebook | What you learn |
 |---|----------|----------------|
@@ -28,14 +28,14 @@ library. Install a prebuilt wheel from the fork's
 (Windows/Linux, Python 3.11–3.14):
 
 ```bash
-pip install <downloaded-aequilibrae-wheel> jupytergis jupyterlab matplotlib
+pip install <downloaded-aequilibrae-wheel> lonboard anywidget jupyterlab matplotlib
 jupyter lab
 ```
 
 or build from source (needs a C++ compiler):
 
 ```bash
-pip install "aequilibrae @ git+https://github.com/RizgarMella/aequilibrae.git@remove-native-spatialite" jupytergis jupyterlab matplotlib
+pip install "aequilibrae @ git+https://github.com/RizgarMella/aequilibrae.git@remove-native-spatialite" lonboard anywidget jupyterlab matplotlib
 ```
 
 **Locked-down networks** (CDNs such as unpkg.com blocked): if maps show only a
@@ -47,9 +47,12 @@ That is the entire setup: this fork's spatial database engine is pure Python
 (shapely + pyproj + SQLite's built-in R*Tree), so no native SpatiaLite package or
 download is required on any platform.
 
-The interactive maps render inside **JupyterLab** (the JupyterGIS extension installs
-with the `jupytergis` wheel). Each map is a live document: use the layer tree to
-toggle layers, edit symbology, or export to QGIS with `doc.export_to_qgis(...)`.
+The interactive maps render through **lonboard** - WebGL maps whose
+frontend ships from the kernel via ipywidgets: no map server extensions and
+no CDN. On networks that block CDNs, run
+`python vendor/patch-lonboard-offline.py` once (see
+[`INSTALL_WORKSTATION.md`](../INSTALL_WORKSTATION.md)). Set
+`AEQ_MAP_BACKEND=static` for plain matplotlib rendering.
 
 All notebooks are self-contained, run top-to-bottom in a few minutes each, and write
 only to a throw-away temporary folder.

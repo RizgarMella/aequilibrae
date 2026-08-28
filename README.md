@@ -4,8 +4,8 @@
 > [AequilibraE](https://github.com/AequilibraE/aequilibrae). It replaces the native
 > SpatiaLite extension with a pure-Python spatial engine (shapely + pyproj + SQLite's
 > built-in R*Tree), so `pip install` is the entire setup — no system packages or DLL
-> downloads. It also adds a [notebook course](notebooks/README.md) with interactive
-> JupyterGIS maps. For the upstream project, use the link above.
+> downloads. It also adds a [notebook course](notebooks/README.md) with interactive,
+> fully offline maps. For the upstream project, use the link above.
 
 ## Installing this fork
 
