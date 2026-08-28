@@ -102,3 +102,8 @@ coverage.xml
 #### End snippet
 .DS_Store
 .vscode
+
+# Jupyter runtime artifacts
+.ipynb_checkpoints/
+.jupyter/
+.jupyter_ystore.db
