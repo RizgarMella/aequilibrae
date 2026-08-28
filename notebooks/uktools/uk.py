@@ -292,3 +292,46 @@ def close_direction(project, links, close="ab"):
             changed += 1
         conn.commit()
     return changed
+
+
+def _delete_result(project, table_name):
+    res = project.results
+    try:
+        if res.check_exists(table_name):
+            res.delete_record(table_name)
+    except Exception:
+        pass
+
+
+def _delete_matrix(project, name):
+    import os as _os
+    mats = project.matrices
+    try:
+        mats.reload()
+        if hasattr(mats, "check_exists") and mats.check_exists(name):
+            mats.delete_record(name)
+    except Exception:
+        pass
+    p = _os.path.join(mats.fldr, f"{name}.omx")
+    if _os.path.isfile(p):
+        try:
+            _os.remove(p)
+        except OSError:
+            pass
+
+
+def save_run(assig, project, name):
+    """Idempotent assig.save_results - safe to re-run the cell any number of
+    times in one session (removes the previous result of the same name via
+    the project results API first)."""
+    for t in (name, f"{name}_sl"):
+        _delete_result(project, t)
+    _delete_matrix(project, f"{name}_skims")
+    assig.save_results(name)
+
+
+def save_select_link_run(assig, project, name):
+    """Idempotent assig.save_select_link_results (flows table + matrices)."""
+    _delete_result(project, name)
+    _delete_matrix(project, name)
+    assig.save_select_link_results(name)

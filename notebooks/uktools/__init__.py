@@ -20,7 +20,7 @@ from .report import summary_card
 from .uk import (SCREENLINES, load_roads, load_roads_geojson, load_zones,
                  load_cities, load_boundary, city, city_bbox, district,
                  district_bbox, screenline, crossings, corridor, focus_map,
-                 add_underlay, compare_links, near, edit_links, close_direction)
+                 add_underlay, compare_links, near, edit_links, close_direction, save_run, save_select_link_run)
 
 __all__ = [
     "STYLE", "field", "constant", "flow_style", "congestion_style",
@@ -30,5 +30,5 @@ __all__ = [
     "SCREENLINES", "load_roads", "load_roads_geojson", "load_zones",
     "load_cities", "load_boundary", "city", "city_bbox", "district",
     "district_bbox", "screenline", "crossings", "corridor", "focus_map",
-    "add_underlay", "compare_links", "near", "edit_links", "close_direction",
+    "add_underlay", "compare_links", "near", "edit_links", "close_direction", "save_run", "save_select_link_run",
 ]
