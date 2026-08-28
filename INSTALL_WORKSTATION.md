@@ -32,26 +32,32 @@ exists.
 
 ---
 
-## Phase 1 — venv with the fork wheel
+## Phase 1 — venv with the fork
 
 ```bash
 python3 -m venv ~/aeq-env            # skip if ~/aeq-env already exists
 source ~/aeq-env/bin/activate
-python -V                            # note the minor version, e.g. 3.12
-# download the wheel matching your Python minor version (cp312 for 3.12 etc.)
-curl -LO https://github.com/RizgarMella/aequilibrae/releases/download/v1.7.0.post1-pip-only/aequilibrae-1.7.0.post1-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
-pip install --upgrade ./aequilibrae-1.7.0.post1-*.whl
+pip install --upgrade "aequilibrae @ git+https://github.com/RizgarMella/aequilibrae.git@remove-native-spatialite"
 pip install ipykernel ipywidgets geopandas matplotlib scipy
 ```
 
-Why the release wheel and why `--upgrade`: the fork's package is also named
-`aequilibrae`, and plain `1.7.0` wheels were silently skipped by pip on any
-machine where the upstream PyPI package had ever been installed ("requirement
-already satisfied") — the classic symptom being
+The git-source install is the primary path on the workstation because it
+uses only git-over-github.com — already proven to work there — and needs no
+GitHub CLI. (Release-asset downloads are the alternative for machines
+without a compiler, but note two catches: without `gh` you list assets via
+`curl -s https://api.github.com/repos/RizgarMella/aequilibrae/releases/latest`,
+and the download itself redirects to `objects.githubusercontent.com`, which a
+strict github.com-only allowlist can block. The wheel URL pattern is
+`https://github.com/RizgarMella/aequilibrae/releases/download/v1.7.0.post1-pip-only/aequilibrae-1.7.0.post1-<cpXY>-<cpXY>-<platform>.whl`.)
+
+Why `--upgrade` and why the `.post1` version matters: the fork's package is
+also named `aequilibrae`, and plain `1.7.0` installs were silently skipped by
+pip on any machine where the upstream PyPI package had ever been installed
+("requirement already satisfied") — the classic symptom being
 `no such function: AddGeometryColumn` at run time, because upstream needs
-native SpatiaLite. The `1.7.0.post1` version outranks upstream's `1.7.0`, and
-`--upgrade` replaces an upstream install if one is present. Never
-`pip install aequilibrae` from PyPI in this venv.
+native SpatiaLite. The branch now carries version `1.7.0.post1`, which
+outranks upstream's `1.7.0`, and `--upgrade` replaces an upstream install if
+one is present. Never `pip install aequilibrae` from PyPI in this venv.
 
 (A `numpy<2` pin is not needed — the fork is verified on numpy 2.5.)
 
