@@ -38,8 +38,14 @@ exists.
 python3 -m venv ~/aeq-env            # skip if ~/aeq-env already exists
 source ~/aeq-env/bin/activate
 pip install --upgrade "aequilibrae @ git+https://github.com/RizgarMella/aequilibrae.git@remove-native-spatialite"
-pip install ipykernel ipywidgets geopandas matplotlib scipy
+pip install ipykernel ipywidgets geopandas matplotlib scipy "jupytergis==0.16.2"
 ```
+
+`jupytergis` must be installed in the venv as well as on the server: the
+*kernel* side provides the `GISDocument` Python API your notebooks import,
+while the *server* side (Phase 3) serves the map frontend — missing either
+half fails differently (kernel: `No module named 'jupytergis'`; server:
+maps degrade to a text repr).
 
 The git-source install is the primary path on the workstation because it
 uses only git-over-github.com — already proven to work there — and needs no
