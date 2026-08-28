@@ -17,6 +17,7 @@ models, with interactive [JupyterGIS](https://jupytergis.readthedocs.io) maps.
 | 10 | [Models at every scale](10_model_scales.ipynb) | From 76-link toys to 50,000-link synthetic metros: how every stage scales with link count, with timing charts and large-model flow maps |
 | 11 | [UK national model](11_uk_national_model.ipynb) | A national model of Great Britain from the real strategic road network (64,000 links, embedded in [`data/`](data)): sectored city zones, calibrated gravity demand, equilibrium flows with separate flow and congestion map views, busiest corridors and the England–Scotland screenline |
 | 12 | [UK in finer detail](12_uk_detailed_network.ipynb) | The same national model rebuilt on a 141,000-link network that adds every primary A-road in Great Britain (embedded in [`data/`](data)) — route competition, diversion and what network detail buys a model |
+| 13 | [GB complete model](13_gb_complete_model.ipynb) | All out: every local-authority district as a zone (350, real ONS boundaries and populations), a 195,000-link four-class network, and the full showcase — choropleths, accessibility, desire lines, select-link, flow/congestion views, corridors, screenlines — with every assumption in one PARAMS cell |
 
 ## Setup
 
