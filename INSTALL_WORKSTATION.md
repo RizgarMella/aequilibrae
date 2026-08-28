@@ -90,69 +90,65 @@ kernel switching.
 
 ---
 
-## Phase 3 — the Jupyter server: run it from the venv
+## Phase 3 — the Jupyter server: two paths, no new ports
 
-The decisive lesson from the field: do **not** rely on the workstation
-image's preinstalled JupyterLab for the map notebooks. Its build and
-configuration differ from the verified stack in ways that surface as
-maps degrading to a text repr and CDN fallback requests. Instead, install
-the exact verified server stack into the venv and run Lab from there:
+Assume the port policy is strict: the **only** reachable URL is the one
+already serving JupyterLab. Both paths below deliver the verified stack
+through exactly that URL.
+
+### Path A (default): align the image's server in place
+
+The image's Lab runs from system Python (evidence: `--break-system-packages`
+installs change its extension list). So pin the entire verified stack —
+including `jupyterlab` itself — into system Python, and the sanctioned URL
+serves the verified build after a restart:
 
 ```bash
+bash ~/aequilibrae/vendor/setup-image-server.sh
+# then restart the workstation and open the normal URL in a NEW tab (hard-refresh)
+```
+
+The script is idempotent — re-run it after image updates or any stray pip
+upgrade. It also prints the diagnostics that matter.
+
+**Check:** `jupyter labextension list` shows `@jupytergis/*` 0.16.2,
+`@jupyter-widgets/jupyterlab-manager` 5.0.16 and `yjs-widgets`. Ignore red
+X / "not compatible" marks against `yjs-widgets`,
+`@jupyter/collaboration-extension` and `@jupyter/docprovider-extension` —
+the verified-working environment shows exactly the same marks.
+
+### Path B (fallback): venv Lab through the sanctioned port
+
+If Path A's premise ever fails (an image update moves the server off system
+Python), run the venv's Lab bound to localhost and let the image's server
+proxy it through the already-open port:
+
+```bash
+/usr/bin/python -m pip install --break-system-packages jupyter-server-proxy
+# restart the workstation so the proxy extension loads, then:
 source ~/aeq-env/bin/activate
 pip install -r ~/aequilibrae/vendor/server-requirements.txt
 cd ~/aequilibrae/notebooks
-jupyter lab --no-browser --port 8890
+jupyter lab --no-browser --ip 127.0.0.1 --port 8890     --ServerApp.base_url=/proxy/absolute/8890/     --IdentityProvider.token=aeq
 ```
 
-Open port 8890 through the workstation's port-forward/preview URL (Cloud
-Workstations exposes forwarded ports from its toolbar). On a locked-down
-workstation config the port-prefixed URL (`https://8890-<workstation-host>/`)
-may not be forwarded; if it does not respond, take over the port the image's
-Lab already uses — that one is proven reachable:
+Open `https://<the-normal-workstation-host>/proxy/absolute/8890/lab?token=aeq`
+— same origin, same sanctioned port, websockets included; nothing new is
+exposed. (`/proxy/absolute/` keeps the URL prefix so the inner Lab's links
+resolve; the inner Lab is reachable only via the authenticated outer server.)
 
-```bash
-jupyter server list            # note the running server's port, e.g. 8080
-jupyter server stop 8080  ||  pkill -f jupyter    # stop the image's server
-source ~/aeq-env/bin/activate
-cd ~/aequilibrae/notebooks
-jupyter lab --no-browser --port 8080 --ip 127.0.0.1
-```
-
-then reload the normal workstation URL, now served by the venv stack. (If a
-supervisor keeps restarting the image's Lab on that port, ask the admin to
-open one forwarded port instead.)
+Either path ends with server, frontend and kernel on pinned,
+mutually-consistent versions — the set verified to make zero CDN requests.
 
 Expect the basemap to be blank grey when tile hosts (openstreetmap.org) are
 outside the egress allowlist — model layers still draw over it; only the
-background street map is missing. Everything —
-server, frontend extensions, kernel — now comes from one venv with pinned,
-mutually-consistent versions: the same set verified to make zero CDN
-requests.
+background street map is missing.
 
-**Check:** `jupyter labextension list` (venv active) shows
-`@jupytergis/jupytergis-core`, `-lab`, `-qgis` 0.16.2,
-`@jupyter-widgets/jupyterlab-manager` 5.0.16 and `yjs-widgets`.
-Ignore red X / "not compatible" marks against `yjs-widgets`,
-`@jupyter/collaboration-extension` and `@jupyter/docprovider-extension` —
-the verified-working environment shows exactly the same marks; they are
-metadata noise from the compatibility checker, not real failures.
+## Phase 4 — vendored frontend (belt-and-braces for Path A)
 
-<details><summary>Fallback: using the image's JupyterLab anyway</summary>
-
-If you must use the preinstalled Lab (server in system Python), mirror the
-pins there too — `/usr/bin/python -m pip install --break-system-packages -r
-~/aequilibrae/vendor/server-requirements.txt` — and continue with Phase 4.
-This is the configuration that has repeatedly misbehaved; prefer the venv
-server.
-
-</details>
-
-## Phase 4 — vendored frontend (only for the image-Lab fallback)
-
-Running the server from the venv (Phase 3) already serves every frontend
-asset same-origin — this phase is only needed on the image-Lab fallback
-path, or if a future pip upgrade breaks the venv's extension set.
+Path A's script already runs this; on Path B it is unnecessary (the venv
+serves its own frontend). Kept for manual repair if a pip upgrade breaks an
+extension set.
 
 Networks that block unpkg.com break map rendering in a specific way:
 `GISDocument()` shows only its text repr, and DevTools shows blocked unpkg
