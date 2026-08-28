@@ -1,10 +1,31 @@
-# AequilibraE
+# AequilibraE (pip-only fork)
 
-[![Downloads](https://img.shields.io/pypi/dm/aequilibrae.svg?maxAge=2592000)](https://pypi.python.org/pypi/aequilibrae)
-[![Documentation](https://github.com/AequilibraE/aequilibrae/actions/workflows/documentation.yml/badge.svg)](https://github.com/AequilibraE/aequilibrae/actions/workflows/documentation.yml)
-[![unit tests](https://github.com/AequilibraE/aequilibrae/actions/workflows/unit_tests.yml/badge.svg)](https://github.com/AequilibraE/aequilibrae/actions/workflows/unit_tests.yml)
-[![Code coverage](https://github.com/AequilibraE/aequilibrae/actions/workflows/test_linux_with_coverage.yml/badge.svg)](https://github.com/AequilibraE/aequilibrae/actions/workflows/test_linux_with_coverage.yml)
-[![Packaging](https://github.com/AequilibraE/aequilibrae/actions/workflows/build_wheels.yml/badge.svg)](https://github.com/AequilibraE/aequilibrae/actions/workflows/build_wheels.yml)
+[![Documentation](https://github.com/RizgarMella/aequilibrae/actions/workflows/documentation.yml/badge.svg)](https://github.com/RizgarMella/aequilibrae/actions/workflows/documentation.yml)
+[![unit tests](https://github.com/RizgarMella/aequilibrae/actions/workflows/unit_tests.yml/badge.svg)](https://github.com/RizgarMella/aequilibrae/actions/workflows/unit_tests.yml)
+[![Code coverage](https://github.com/RizgarMella/aequilibrae/actions/workflows/test_linux_with_coverage.yml/badge.svg)](https://github.com/RizgarMella/aequilibrae/actions/workflows/test_linux_with_coverage.yml)
+[![Packaging](https://github.com/RizgarMella/aequilibrae/actions/workflows/build_wheels.yml/badge.svg)](https://github.com/RizgarMella/aequilibrae/actions/workflows/build_wheels.yml)
+
+> This is [RizgarMella's fork](https://github.com/RizgarMella/aequilibrae) of
+> [AequilibraE](https://github.com/AequilibraE/aequilibrae). It replaces the native
+> SpatiaLite extension with a pure-Python spatial engine (shapely + pyproj + SQLite's
+> built-in R*Tree), so `pip install` is the entire setup — no system packages or DLL
+> downloads. It also adds a [notebook course](notebooks/README.md) with interactive
+> JupyterGIS maps. For the upstream project, use the link above.
+
+## Installing this fork
+
+Prebuilt wheels for Windows and Linux (Python 3.11–3.13) are on the
+[release page](https://github.com/RizgarMella/aequilibrae/releases/tag/v1.7.0-pip-only) —
+download the one for your platform and `pip install <wheel>`.
+
+To build from source instead (needs a C++ compiler):
+
+```bash
+pip install "aequilibrae @ git+https://github.com/RizgarMella/aequilibrae.git@remove-native-spatialite"
+```
+
+Do **not** `pip install aequilibrae` from PyPI if you want this fork — that installs
+the upstream package, which still requires the native SpatiaLite library.
 
 AequilibraE is a fully-featured Open-Source transportation modeling package and
 the first comprehensive package of its kind for the Python ecosystem, and is 
