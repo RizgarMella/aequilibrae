@@ -15,9 +15,12 @@ project venv. Run everything in a Jupyter terminal (File → New → Terminal).
 ## Phase 0 — auth and clone
 
 ```bash
-gh auth login          # choose github.com, HTTPS; handles git credentials too
 git clone https://github.com/RizgarMella/aequilibrae.git ~/aequilibrae
 ```
+
+(The repo is public, so no auth is needed - and the workstation has no
+GitHub CLI; nothing in this guide uses gh. If the repo is ever made
+private, use a personal access token as the password when git prompts.)
 
 Clone into the home directory (persistent disk), not `/tmp`. A full clone —
 the notebooks need `notebooks/data/` and `vendor/`; a sparse notebooks-only
@@ -35,8 +38,8 @@ exists.
 python3 -m venv ~/aeq-env            # skip if ~/aeq-env already exists
 source ~/aeq-env/bin/activate
 python -V                            # note the minor version, e.g. 3.12
-gh release download v1.7.0.post1-pip-only --repo RizgarMella/aequilibrae \
-   --pattern "*cp312*manylinux*x86_64*"     # match your Python minor version
+# download the wheel matching your Python minor version (cp312 for 3.12 etc.)
+curl -LO https://github.com/RizgarMella/aequilibrae/releases/download/v1.7.0.post1-pip-only/aequilibrae-1.7.0.post1-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
 pip install --upgrade ./aequilibrae-1.7.0.post1-*.whl
 pip install ipykernel ipywidgets geopandas matplotlib scipy
 ```
