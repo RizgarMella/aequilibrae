@@ -21,13 +21,23 @@ set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PY="${1:-/usr/bin/python}"
 
-echo "== 1/3 pinning server stack into: $PY"
+echo "== 1/4 pinning server stack into: $PY"
 "$PY" -m pip install --break-system-packages --upgrade -r "$HERE/server-requirements.txt"
 
-echo "== 2/3 vendored frontend overlay"
+echo "== 2/4 vendored frontend overlay"
 bash "$HERE/install-assets.sh"
 
-echo "== 3/3 diagnostics"
+echo "== 3/4 CDN-reference scan of the served frontend"
+SHARE="$("$PY" -c 'import sys, os; print(os.path.join(sys.prefix, "share", "jupyter"))')"
+HITS="$(grep -rlE "unpkg\.com|cdn\.jsdelivr\.net"         "$SHARE/lab/static" "$SHARE/labextensions"         "$HOME/.local/share/jupyter/labextensions" 2>/dev/null || true)"
+if [ -n "$HITS" ]; then
+  echo "    CDN references found in these served files (report these):"
+  echo "$HITS" | sed 's/^/      /'
+else
+  echo "    none - the served frontend contains no unpkg/jsdelivr references"
+fi
+
+echo "== 4/4 diagnostics"
 "$PY" -m jupyter --version | sed 's/^/    /' || true
 "$PY" -m jupyter labextension list 2>&1 | grep -E "jupytergis|yjs|widgets|collaboration|docprovider" | sed 's/^/    /' || true
 echo
