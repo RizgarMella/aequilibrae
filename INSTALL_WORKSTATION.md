@@ -36,7 +36,7 @@ exists.
 python3 -m venv ~/aeq-env            # skip if ~/aeq-env already exists
 source ~/aeq-env/bin/activate
 pip install --upgrade "aequilibrae @ git+https://github.com/RizgarMella/aequilibrae.git@remove-native-spatialite"
-pip install ipykernel ipywidgets geopandas matplotlib scipy lonboard anywidget
+pip install ipykernel ipywidgets geopandas matplotlib scipy lonboard anywidget sidecar
 ```
 
 Git-source install uses only git-over-github.com (proven on the
@@ -84,7 +84,7 @@ renders). lonboard needs only two more things:
    extensions up (a mechanism proven on this workstation):
 
    ```bash
-   /usr/bin/python -m pip install --break-system-packages anywidget lonboard
+   /usr/bin/python -m pip install --break-system-packages anywidget lonboard sidecar
    ```
 
 2. **lonboard's wasm decoder inlined** (it otherwise loads from

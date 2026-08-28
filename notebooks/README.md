@@ -47,12 +47,30 @@ That is the entire setup: this fork's spatial database engine is pure Python
 (shapely + pyproj + SQLite's built-in R*Tree), so no native SpatiaLite package or
 download is required on any platform.
 
-The interactive maps render through **lonboard** - WebGL maps whose
-frontend ships from the kernel via ipywidgets: no map server extensions and
-no CDN. On networks that block CDNs, run
-`python vendor/patch-lonboard-offline.py` once (see
-[`INSTALL_WORKSTATION.md`](../INSTALL_WORKSTATION.md)). Set
-`AEQ_MAP_BACKEND=static` for plain matplotlib rendering.
+The maps and all UK analysis helpers live in the [`uktools`](uktools/)
+package next to the notebooks - `from uktools import *` gives every notebook:
+
+- **offline interactive maps** (lonboard WebGL via ipywidgets: no map server
+  extensions, no CDN; `AEQ_MAP_BACKEND=static` for plain matplotlib);
+- **cartographic standards** in one place (`uktools/style.py` - `STYLE` plus
+  canned builders like `flow_style` / `congestion_style` / `diff_style`);
+- **analyst tools**: hover tooltips with highlighting, layer on/off toggles
+  (`doc.show(controls=True)`), JupyterLab side panels (`doc.show(sidecar=...)`),
+  Shift+drag box selection (`doc.selection()`), `side_by_side()` run
+  comparison, and `focus_map("Birmingham", km=40)` city/district windows;
+- **model surgery**: geometric selection (`near(links, "London", miles=3)`),
+  attribute edits written to the model database (`edit_links` for speeds and
+  capacities, `close_direction` for one-way closures), and run differencing
+  (`compare_links` + `diff_style` maps of any attribute - flows, capacity...);
+- **clean long runs**: `progress_box` scrollable bottom-pinned progress panels,
+  and `summary_card` unified one-page HTML summaries;
+- **UK data management**: loaders for the embedded road networks, districts,
+  cities and boundary, plus screenlines and corridor selection.
+
+Render cells are decoupled from compute cells throughout - restyling a map
+re-runs in a second without recomputing the model. On networks that block
+CDNs, run `python vendor/patch-lonboard-offline.py` once (see
+[`INSTALL_WORKSTATION.md`](../INSTALL_WORKSTATION.md)).
 
 All notebooks are self-contained, run top-to-bottom in a few minutes each, and write
 only to a throw-away temporary folder.
