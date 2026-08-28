@@ -13,6 +13,8 @@ models, with interactive [JupyterGIS](https://jupytergis.readthedocs.io) maps.
 | 06 | [Route choice](06_route_choice.ipynb) | BFSLE choice sets, path-size logit assignment |
 | 07 | [Public transport](07_public_transport.ipynb) | GTFS import, transit database, route/stop mapping |
 | 08 | [Full model workflow](08_full_model_workflow.ipynb) | Base/future years, select-link analysis, scenario comparison |
+| 09 | [Full regional model](09_full_regional_model.ipynb) | Everything at once on the Coquimbo region: network prep, land-use trip generation, gravity + IPF, multi-class assignment with select link, congestion maps, route choice, GTFS |
+| 10 | [Models at every scale](10_model_scales.ipynb) | From 76-link toys to 50,000-link synthetic metros: how every stage scales with link count, with timing charts and large-model flow maps |
 
 ## Setup
 
