@@ -24,8 +24,8 @@ models, with interactive [JupyterGIS](https://jupytergis.readthedocs.io) maps.
 These notebooks need **this fork** of AequilibraE — do not `pip install aequilibrae`
 from PyPI, which is the upstream package and still requires the native SpatiaLite
 library. Install a prebuilt wheel from the fork's
-[release page](https://github.com/RizgarMella/aequilibrae/releases/tag/v1.7.0-pip-only)
-(Windows/Linux, Python 3.11–3.13):
+[release page](https://github.com/RizgarMella/aequilibrae/releases/tag/v1.7.0.post1-pip-only)
+(Windows/Linux, Python 3.11–3.14):
 
 ```bash
 pip install <downloaded-aequilibrae-wheel> jupytergis jupyterlab matplotlib
@@ -37,6 +37,11 @@ or build from source (needs a C++ compiler):
 ```bash
 pip install "aequilibrae @ git+https://github.com/RizgarMella/aequilibrae.git@remove-native-spatialite" jupytergis jupyterlab matplotlib
 ```
+
+**Locked-down networks** (CDNs such as unpkg.com blocked): if maps show only a
+text repr, install the vendored JupyterLab frontend from this repo — see
+[`vendor/README.md`](../vendor/README.md); everything the notebooks need then
+comes from this repository alone.
 
 That is the entire setup: this fork's spatial database engine is pure Python
 (shapely + pyproj + SQLite's built-in R*Tree), so no native SpatiaLite package or

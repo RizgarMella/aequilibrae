@@ -1,10 +1,5 @@
 # AequilibraE (pip-only fork)
 
-[![Documentation](https://github.com/RizgarMella/aequilibrae/actions/workflows/documentation.yml/badge.svg)](https://github.com/RizgarMella/aequilibrae/actions/workflows/documentation.yml)
-[![unit tests](https://github.com/RizgarMella/aequilibrae/actions/workflows/unit_tests.yml/badge.svg)](https://github.com/RizgarMella/aequilibrae/actions/workflows/unit_tests.yml)
-[![Code coverage](https://github.com/RizgarMella/aequilibrae/actions/workflows/test_linux_with_coverage.yml/badge.svg)](https://github.com/RizgarMella/aequilibrae/actions/workflows/test_linux_with_coverage.yml)
-[![Packaging](https://github.com/RizgarMella/aequilibrae/actions/workflows/build_wheels.yml/badge.svg)](https://github.com/RizgarMella/aequilibrae/actions/workflows/build_wheels.yml)
-
 > This is [RizgarMella's fork](https://github.com/RizgarMella/aequilibrae) of
 > [AequilibraE](https://github.com/AequilibraE/aequilibrae). It replaces the native
 > SpatiaLite extension with a pure-Python spatial engine (shapely + pyproj + SQLite's
@@ -14,8 +9,8 @@
 
 ## Installing this fork
 
-Prebuilt wheels for Windows and Linux (Python 3.11–3.13) are on the
-[release page](https://github.com/RizgarMella/aequilibrae/releases/tag/v1.7.0-pip-only) —
+Prebuilt wheels for Windows and Linux x86-64/ARM (Python 3.11–3.14) are on the
+[release page](https://github.com/RizgarMella/aequilibrae/releases/tag/v1.7.0.post1-pip-only) —
 download the one for your platform and `pip install <wheel>`.
 
 To build from source instead (needs a C++ compiler):
