@@ -103,7 +103,26 @@ jupyter lab --no-browser --port 8890
 ```
 
 Open port 8890 through the workstation's port-forward/preview URL (Cloud
-Workstations exposes forwarded ports from its toolbar). Everything —
+Workstations exposes forwarded ports from its toolbar). On a locked-down
+workstation config the port-prefixed URL (`https://8890-<workstation-host>/`)
+may not be forwarded; if it does not respond, take over the port the image's
+Lab already uses — that one is proven reachable:
+
+```bash
+jupyter server list            # note the running server's port, e.g. 8080
+jupyter server stop 8080  ||  pkill -f jupyter    # stop the image's server
+source ~/aeq-env/bin/activate
+cd ~/aequilibrae/notebooks
+jupyter lab --no-browser --port 8080 --ip 127.0.0.1
+```
+
+then reload the normal workstation URL, now served by the venv stack. (If a
+supervisor keeps restarting the image's Lab on that port, ask the admin to
+open one forwarded port instead.)
+
+Expect the basemap to be blank grey when tile hosts (openstreetmap.org) are
+outside the egress allowlist — model layers still draw over it; only the
+background street map is missing. Everything —
 server, frontend extensions, kernel — now comes from one venv with pinned,
 mutually-consistent versions: the same set verified to make zero CDN
 requests.
