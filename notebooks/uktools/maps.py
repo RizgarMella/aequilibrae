@@ -19,6 +19,7 @@ class MapDoc:
         self.bbox = bbox     # (minx, miny, maxx, maxy) - clips every layer
         self.height = height or STYLE["map_height"]
         self._map = None
+        self._bitmap_layers = []
 
     def add(self, gdf, name, symbology, opacity, tooltip=None):
         g = gdf
@@ -28,9 +29,18 @@ class MapDoc:
         g = g.reset_index(drop=True).explode(index_parts=False).reset_index(drop=True)
         self.items.append((g, name, _style_arrays(symbology, g), opacity, tooltip or []))
 
+    def add_bitmap(self, image_uri, bounds, name="basemap"):
+        """A raster underlay (data-URI image + lon/lat bounds), drawn first."""
+        self._bitmap_layers.append((name, image_uri, list(bounds)))
+
     def _build(self):
-        from lonboard import Map, PathLayer, PolygonLayer, ScatterplotLayer
+        from lonboard import BitmapLayer, Map, PathLayer, PolygonLayer, ScatterplotLayer
         built = []
+        for name, uri, bounds in self._bitmap_layers:
+            bb = bounds
+            if self.bbox is not None:   # keep the image but let clipping crop the view
+                bb = bounds
+            built.append((name, BitmapLayer(image=uri, bounds=[bb[0], bb[1], bb[2], bb[3]])))
         for g, name, st, op, tips in self.items:
             if not len(g):
                 continue

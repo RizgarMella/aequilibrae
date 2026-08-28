@@ -150,9 +150,23 @@ def focus_map(where, km=30, height=None):
     return MapDoc(bbox=bbox, height=height)
 
 
-def add_underlay(doc, roads_gdf=None, boundary=True):
-    """Geographic context under the data: GB outline and, optionally, the
-    road network as a single faint merged backdrop."""
+#: frame of the pre-rendered GB basemap image (minx, miny, maxx, maxy)
+BASEMAP_BOUNDS = (-8.2, 49.8, 2.0, 58.8)
+
+
+def add_underlay(doc, roads_gdf=None, boundary=False, basemap=True):
+    """The UK under-map: geographic context beneath the model layers.
+
+    basemap=True (default) draws the pre-rendered offline GB base
+    (data/gb_basemap.png - land, sea, built-up areas, water, the strategic
+    road skeleton and city labels; fully embedded, no tiles, no CDN).
+    boundary=True adds the plain GB outline instead/on top; roads_gdf adds a
+    faint merged backdrop of a network you pass in."""
+    if basemap:
+        import base64
+        img = (DATA / "gb_basemap.png").read_bytes()
+        doc.add_bitmap("data:image/png;base64," + base64.b64encode(img).decode(),
+                       BASEMAP_BOUNDS, name="GB basemap")
     if boundary:
         add_gdf(doc, load_boundary(), "Great Britain", opacity=0.2,
                 symbology=[[constant(STYLE["boundary_fill"]).encoding("fill")]])
