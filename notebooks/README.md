@@ -15,7 +15,8 @@ models, with interactive [JupyterGIS](https://jupytergis.readthedocs.io) maps.
 | 08 | [Full model workflow](08_full_model_workflow.ipynb) | Base/future years, select-link analysis, scenario comparison |
 | 09 | [Full regional model](09_full_regional_model.ipynb) | Everything at once on the Coquimbo region: network prep, land-use trip generation, gravity + IPF, multi-class assignment with select link, congestion maps, route choice, GTFS |
 | 10 | [Models at every scale](10_model_scales.ipynb) | From 76-link toys to 50,000-link synthetic metros: how every stage scales with link count, with timing charts and large-model flow maps |
-| 11 | [UK national model](11_uk_national_model.ipynb) | A national model of Great Britain from the real strategic road network (64,000 links, embedded in [`data/`](data)): city zones, national skims, gravity demand, equilibrium flows, busiest corridors and the England–Scotland screenline |
+| 11 | [UK national model](11_uk_national_model.ipynb) | A national model of Great Britain from the real strategic road network (64,000 links, embedded in [`data/`](data)): sectored city zones, calibrated gravity demand, equilibrium flows with separate flow and congestion map views, busiest corridors and the England–Scotland screenline |
+| 12 | [UK in finer detail](12_uk_detailed_network.ipynb) | The same national model rebuilt on a 141,000-link network that adds every primary A-road in Great Britain (embedded in [`data/`](data)) — route competition, diversion and what network detail buys a model |
 
 ## Setup
 
