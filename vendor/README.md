@@ -27,7 +27,7 @@ captured from a verified-working environment (JupyterLab 4.6, jupytergis
 - `jupyterlab-tour`, `jupyterlab_pygments`
 
 `server-requirements.txt` pins the exact server-side Python stack of the same
-verified environment. The strongest setup on a locked-down workstation is to
+verified environment. The strongest setup on an offline workstation is to
 install it into the project venv and run `jupyter lab` from that venv
 (see `INSTALL_WORKSTATION.md`, Phase 3) — then this tarball is only a backup
 for repairing a broken extension set.
@@ -37,10 +37,10 @@ Note: `jupyter labextension list` marks `yjs-widgets`,
 red X ("not compatible") even in the verified-working environment — those
 marks are metadata noise; do not chase them.
 
-## Locked-down networks (unpkg.com etc. blocked)
+## Offline workstations (unpkg.com etc. unreachable)
 
 If `GISDocument()` shows only a text repr and the browser console shows
-blocked requests to a CDN such as unpkg.com, the server is missing (or has a
+failed requests to a CDN such as unpkg.com, the server is missing (or has a
 version mismatch in) one of the frontend modules above, and the widget
 machinery is falling back to fetching it from the CDN at render time.
 

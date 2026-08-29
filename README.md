@@ -19,8 +19,8 @@ To build from source instead (needs a C++ compiler):
 pip install "aequilibrae @ git+https://github.com/RizgarMella/aequilibrae.git@remove-native-spatialite"
 ```
 
-Setting up on a locked-down machine (Cloud Workstations, blocked CDNs)? Follow
-the phased guide in [INSTALL_WORKSTATION.md](INSTALL_WORKSTATION.md).
+Setting up an offline workstation (no CDN access — e.g. Cloud Workstations)?
+Follow the phased guide in [INSTALL_WORKSTATION.md](INSTALL_WORKSTATION.md).
 
 Do **not** `pip install aequilibrae` from PyPI if you want this fork — that installs
 the upstream package, which still requires the native SpatiaLite library.

@@ -38,7 +38,7 @@ or build from source (needs a C++ compiler):
 pip install "aequilibrae @ git+https://github.com/RizgarMella/aequilibrae.git@remove-native-spatialite" lonboard anywidget jupyterlab matplotlib
 ```
 
-**Locked-down networks** (CDNs such as unpkg.com blocked): if maps show only a
+**Offline workstations** (CDNs such as unpkg.com unreachable): if maps show only a
 text repr, install the vendored JupyterLab frontend from this repo — see
 [`vendor/README.md`](../vendor/README.md); everything the notebooks need then
 comes from this repository alone.

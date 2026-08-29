@@ -1,9 +1,10 @@
-# Workstation setup — phased install
+# Offline workstation setup — phased install
 
-Phased install of this fork and its notebook course on a locked-down machine
+Phased install of this fork and its notebook course on an offline
+workstation — a machine where only github.com and PyPI are reachable
 (written for Google Cloud Workstations: JupyterLab preinstalled, Debian
-system Python that is externally managed, egress limited to github.com and
-PyPI, CDNs blocked, no new ports, no GitHub CLI). Every phase ends with a
+system Python that is externally managed, CDNs unreachable, no extra
+server ports, no GitHub CLI). Every phase ends with a
 check — do not move on until the check passes.
 
 The maps use **lonboard**: interactive WebGL maps whose frontend JavaScript
@@ -88,7 +89,7 @@ renders). lonboard needs only two more things:
    ```
 
 2. **lonboard's wasm decoder inlined** (it otherwise loads from
-   cdn.jsdelivr.net at render time — blocked). Patch the venv copy; the
+   cdn.jsdelivr.net at render time — unavailable offline). Patch the venv copy; the
    wasm is vendored in this repo:
 
    ```bash
@@ -135,6 +136,6 @@ same notebooks to plain matplotlib rendering if ever needed.
 | `ModuleNotFoundError` (geopandas/aequilibrae) in a notebook | notebook on the system `python3` kernel | Phase 2 kernel override |
 | Map output empty or shows a javascript error | anywidget frontend not served, or stale tab | Phase 3 step 1, restart server, hard-refresh |
 | Console: `No version of module anywidget is registered` | anywidget labextension missing server-side | Phase 3 step 1 + server restart |
-| Map panel appears but layers never draw; failed `cdn.jsdelivr.net/.../parquet_wasm_bg.wasm` request | lonboard's wasm decoder blocked | Phase 3 step 2 (patch script), then restart the **kernel** |
+| Map panel appears but layers never draw; failed `cdn.jsdelivr.net/.../parquet_wasm_bg.wasm` request | lonboard's wasm decoder unreachable | Phase 3 step 2 (patch script), then restart the **kernel** |
 | Everything ran yesterday, broken after a pip upgrade | upgrade replaced the patched lonboard | re-run Phase 3 step 2 |
 | Notebook edits on disk not appearing in the browser | stale tab / collaborative cache | close the tab and reopen; stubborn: restart server |
