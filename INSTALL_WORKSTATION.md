@@ -131,10 +131,12 @@ broken** — when in doubt, close the tab entirely and reopen.
    choropleth, accessibility map, desire lines, flow and congestion views,
    select-link and corridors all render as interactive offline maps.
 
-There is **no basemap** on these maps by design (basemap tiles are
-CDN-hosted); model layers draw on a neutral background, with the GB boundary
-layer providing geographic context. `AEQ_MAP_BACKEND=static` switches the
-same notebooks to plain matplotlib rendering if ever needed.
+There are **no basemap tiles** on these maps (tiles are CDN-hosted);
+instead every map draws an all-vector offline under-map from data in this
+repo - sea/land grounds, built-up areas, the strategic road skeleton and
+city labels - which stays crisp at every zoom level.
+`AEQ_MAP_BACKEND=static` switches the same notebooks to plain matplotlib
+rendering if ever needed.
 
 ---
 

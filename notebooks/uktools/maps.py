@@ -15,19 +15,37 @@ class MapDoc:
     """Collects styled layers; renders via lonboard (or matplotlib)."""
 
     def __init__(self, bbox=None, height=None):
-        self.items = []      # (gdf, name, arrays, opacity, tooltip_cols)
+        self.items = []      # (gdf, name, arrays, opacity, tooltip_cols, flags)
         self.bbox = bbox     # (minx, miny, maxx, maxy) - clips every layer
         self.height = height or STYLE["map_height"]
         self._map = None
         self._bitmap_layers = []
+        self._text_items = []   # (gdf, name, text_col, size_px, rgba) - drawn last
 
-    def add(self, gdf, name, symbology, opacity, tooltip=None):
+    def add(self, gdf, name, symbology, opacity, tooltip=None, flags=None):
         g = gdf
         if self.bbox is not None:
             minx, miny, maxx, maxy = self.bbox
             g = g.cx[minx:maxx, miny:maxy]
+            if (flags or {}).get("clip") and len(g):
+                # ground layers (sea, land, skeleton) span all GB: cut them to
+                # the window so the view auto-fit stays on the focus area
+                from shapely.geometry import box as _box
+                g = g.clip(_box(minx, miny, maxx, maxy))
         g = g.reset_index(drop=True).explode(index_parts=False).reset_index(drop=True)
-        self.items.append((g, name, _style_arrays(symbology, g), opacity, tooltip or []))
+        self.items.append((g, name, _style_arrays(symbology, g), opacity, tooltip or [],
+                           flags or {}))
+
+    def add_text(self, gdf, name, text_col, size_px=None, color=None):
+        """Point labels drawn on top of every layer, sized in screen pixels -
+        crisp at any zoom (the under-map's city names use this)."""
+        g = gdf
+        if self.bbox is not None:
+            minx, miny, maxx, maxy = self.bbox
+            g = g.cx[minx:maxx, miny:maxy]
+        self._text_items.append((g.reset_index(drop=True), name, text_col,
+                                 size_px or STYLE["label_size_px"],
+                                 color or STYLE["label_color"]))
 
     def add_bitmap(self, image_uri, bounds, name="basemap"):
         """A raster underlay (data-URI image + lon/lat bounds), drawn first."""
@@ -41,7 +59,7 @@ class MapDoc:
             if self.bbox is not None:   # keep the image but let clipping crop the view
                 bb = bounds
             built.append((name, BitmapLayer(image=uri, bounds=[bb[0], bb[1], bb[2], bb[3]])))
-        for g, name, st, op, tips in self.items:
+        for g, name, st, op, tips, flags in self.items:
             if not len(g):
                 continue
             geom = g.geometry.geom_type.iloc[0]
@@ -57,7 +75,9 @@ class MapDoc:
                     kw["get_width"] = st["width"]
                 layer = PathLayer.from_geopandas(base, **kw)
             elif "Polygon" in geom:
-                kw = {"opacity": op * 0.6, "stroked": False, **pick}
+                # solid ground layers (sea, land) skip the translucency fudge
+                poly_op = op if flags.get("solid") else op * 0.6
+                kw = {"opacity": poly_op, "stroked": False, **pick}
                 if st["fill"] is not None:
                     kw["get_fill_color"] = st["fill"]
                 layer = PolygonLayer.from_geopandas(base, **kw)
@@ -68,7 +88,17 @@ class MapDoc:
                     kw["get_fill_color"] = fill
                 layer = ScatterplotLayer.from_geopandas(base, **kw)
             built.append((name, layer))
-        show_tip = any(t for *_, t in self.items)
+        for g, name, text_col, size_px, rgba in self._text_items:
+            if not len(g):
+                continue
+            from lonboard.experimental import TextLayer
+            layer = TextLayer.from_geopandas(
+                g[[text_col, "geometry"]],
+                get_text=g[text_col], get_color=rgba,
+                get_size=size_px, size_units="pixels",
+                get_text_anchor="start", get_pixel_offset=[6, 0])
+            built.append((name, layer))
+        show_tip = any(t for _, _, _, _, t, _ in self.items)
         self._map = Map(layers=[l for _, l in built], basemap=None,
                         show_tooltip=show_tip, height=self.height)
         self._layers = built
@@ -112,7 +142,7 @@ class MapDoc:
     def _static_figure(self):
         fig, ax = _plt.subplots(figsize=(9, 7))
         ax.set_facecolor("#eef1f4")
-        for g, name, st, op, _ in self.items:
+        for g, name, st, op, _, flags in self.items:
             if not len(g):
                 continue
             geom = g.geometry.geom_type.iloc[0]
@@ -122,11 +152,20 @@ class MapDoc:
                 g.plot(ax=ax, color=colors, linewidth=widths, alpha=op)
             elif "Polygon" in geom:
                 colors = st["fill"] / 255 if st["fill"] is not None else "#cbd5e1"
-                g.plot(ax=ax, color=colors, alpha=op * 0.6)
+                g.plot(ax=ax, color=colors, alpha=op if flags.get("solid") else op * 0.6)
             else:
                 fill = st["fill"] if st["fill"] is not None else st["stroke"]
                 g.plot(ax=ax, color=(fill / 255 if fill is not None else STYLE["city_point"]),
                        markersize=25, alpha=op)
+        for g, name, text_col, size_px, rgba in self._text_items:
+            c = np.asarray(rgba, dtype=float) / 255
+            for _, row in g.iterrows():
+                ax.annotate(str(row[text_col]), (row.geometry.x, row.geometry.y),
+                            fontsize=size_px * 0.6, color=c, xytext=(3, 0),
+                            textcoords="offset points", va="center")
+        if self.bbox is not None:
+            ax.set_xlim(self.bbox[0], self.bbox[2])
+            ax.set_ylim(self.bbox[1], self.bbox[3])
         ax.set_aspect(1.4)
         ax.set_xticks([]), ax.set_yticks([])
         _plt.tight_layout()

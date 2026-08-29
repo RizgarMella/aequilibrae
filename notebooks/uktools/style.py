@@ -20,6 +20,13 @@ STYLE = {
     # fixed colours
     "boundary_fill": "#94a3b8",
     "backdrop_line": "#94a3b8",
+    # the vector under-map (colours harvested from the retired raster basemap)
+    "sea_fill": "#d6e3ef",
+    "land_fill": "#f7f5f0",
+    "builtup_fill": "#e6dfd4",
+    "skeleton_line": "#cfc6b8",
+    "label_color": [71, 85, 105, 255],       # slate-600
+    "label_size_px": 13,
     "city_point": "#dc2626",
     "emphasis": "#dc2626",
     "road_class_colors": {"motorway": "#1d4ed8", "trunk": "#475569",

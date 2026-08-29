@@ -86,6 +86,14 @@ def load_boundary():
     return gpd.GeoDataFrame(geometry=[shape(f["geometry"]) for f in gj["features"]], crs=4326)
 
 
+@lru_cache(maxsize=None)
+def load_builtup():
+    """GB built-up-area polygons (urban footprint blobs for the under-map)."""
+    with gzip.open(DATA / "gb_builtup.geojson.gz", "rt", encoding="utf-8") as fh:
+        gj = json.load(fh)
+    return gpd.GeoDataFrame(geometry=[shape(f["geometry"]) for f in gj["features"]], crs=4326)
+
+
 # --- geography lookups ------------------------------------------------------
 def city(name):
     """(lon, lat) of a city from the embedded table (case-insensitive)."""
@@ -150,23 +158,42 @@ def focus_map(where, km=30, height=None):
     return MapDoc(bbox=bbox, height=height)
 
 
-#: frame of the pre-rendered GB basemap image (minx, miny, maxx, maxy)
-BASEMAP_BOUNDS = (-8.2, 49.8, 2.0, 58.8)
+#: generous frame around GB for the sea ground layer (minx, miny, maxx, maxy)
+SEA_BOUNDS = (-12.0, 48.0, 5.0, 61.5)
 
 
 def add_underlay(doc, roads_gdf=None, boundary=False, basemap=True):
     """The UK under-map: geographic context beneath the model layers.
 
-    basemap=True (default) draws the pre-rendered offline GB base
-    (data/gb_basemap.png - land, sea, built-up areas, water, the strategic
-    road skeleton and city labels; fully embedded, no tiles, no CDN).
-    boundary=True adds the plain GB outline instead/on top; roads_gdf adds a
-    faint merged backdrop of a network you pass in."""
+    basemap=True (default) draws an all-vector offline GB base - sea and
+    land grounds, built-up-area blobs, the strategic road skeleton, and
+    city labels sized in screen pixels - so it stays crisp at every zoom
+    from the national view to a street-level window (no tiles, no CDN,
+    ~1.5 MB of vectors). boundary=True adds the plain GB outline
+    instead/on top; roads_gdf adds a faint merged backdrop of a network
+    you pass in."""
     if basemap:
-        import base64
-        img = (DATA / "gb_basemap.png").read_bytes()
-        doc.add_bitmap("data:image/png;base64," + base64.b64encode(img).decode(),
-                       BASEMAP_BOUNDS, name="GB basemap")
+        from shapely.geometry import box as _box
+        sea = gpd.GeoDataFrame(geometry=[_box(*SEA_BOUNDS)], crs=4326)
+        ground = {"solid": True, "clip": True}
+        doc.add(sea, "sea", [[constant(STYLE["sea_fill"]).encoding("fill")]],
+                1.0, flags=ground)
+        doc.add(load_boundary(), "land",
+                [[constant(STYLE["land_fill"]).encoding("fill")]],
+                1.0, flags=ground)
+        doc.add(load_builtup(), "built-up areas",
+                [[constant(STYLE["builtup_fill"]).encoding("fill")]],
+                1.0, flags=ground)
+        doc.add(merge_lines(load_roads("strategic"), tol=0.002), "road skeleton",
+                [[constant(STYLE["skeleton_line"]).encoding("stroke")]], 0.7,
+                flags={"clip": True})
+        cities = load_cities()
+        if doc.bbox is None:   # national view: label the major cities only
+            cities = cities[cities.population >= 250_000]
+        pts = gpd.GeoDataFrame(cities[["city"]],
+                               geometry=gpd.points_from_xy(cities.lon, cities.lat),
+                               crs=4326)
+        doc.add_text(pts, "city labels", "city")
     if boundary:
         add_gdf(doc, load_boundary(), "Great Britain", opacity=0.2,
                 symbology=[[constant(STYLE["boundary_fill"]).encoding("fill")]])
