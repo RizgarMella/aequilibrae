@@ -37,8 +37,16 @@ exists.
 python3 -m venv ~/aeq-env            # skip if ~/aeq-env already exists
 source ~/aeq-env/bin/activate
 pip install --upgrade "aequilibrae @ git+https://github.com/RizgarMella/aequilibrae.git@remove-native-spatialite"
-pip install ipykernel ipywidgets geopandas matplotlib scipy lonboard anywidget sidecar
+pip install --find-links ~/aequilibrae/vendor/wheels \
+    ipykernel ipywidgets geopandas matplotlib scipy \
+    lonboard==0.16.0 anywidget==0.9.21 sidecar==0.8.1
 ```
+
+The widget stack (lonboard, anywidget, sidecar - the three pure-Python
+packages the maps depend on) ships in this repo at the exact versions the
+course is validated against: `--find-links` installs them from
+`vendor/wheels/`, immune to a PyPI release changing behaviour under you.
+Only their compiled dependencies still come from PyPI.
 
 Git-source install uses only git-over-github.com (proven on the
 workstation). The branch's version is `1.7.0.post1`, which outranks upstream
@@ -85,7 +93,9 @@ renders). lonboard needs only two more things:
    extensions up (a mechanism proven on this workstation):
 
    ```bash
-   /usr/bin/python -m pip install --break-system-packages anywidget lonboard sidecar
+   /usr/bin/python -m pip install --break-system-packages \
+       --find-links ~/aequilibrae/vendor/wheels \
+       anywidget==0.9.21 lonboard==0.16.0 sidecar==0.8.1
    ```
 
 2. **lonboard's wasm decoder inlined** (it otherwise loads from

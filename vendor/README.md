@@ -1,12 +1,21 @@
 # Vendored assets
 
 **Current:** the notebook course renders maps with **lonboard** (offline
-WebGL via ipywidgets). Two files here support that:
+WebGL via ipywidgets). These support that:
 
+- `wheels/` - the pure-Python widget stack (`lonboard`, `anywidget`,
+  `sidecar`) at the exact versions the course is validated against.
+  Install with `pip install --find-links vendor/wheels <pkg>==<version>`
+  (see `INSTALL_WORKSTATION.md`) so a PyPI release can never change the
+  map stack under you. Compiled dependencies still come from PyPI.
 - `jupytergis-assets/parquet_wasm_bg.wasm` - lonboard's parquet decoder,
   vendored so no CDN is needed; applied by `patch-lonboard-offline.py`.
 - `patch-lonboard-offline.py` - inlines the wasm into the installed
   lonboard (idempotent; re-run after lonboard upgrades).
+
+Pure-Python *library code* embedded directly in the course lives in
+`notebooks/uktools/_vendor/` instead (currently pyshp for GDAL-free
+shapefile I/O, with its MIT license alongside).
 
 Everything below this line concerns the **abandoned jupytergis stack** and
 is kept for reference only.

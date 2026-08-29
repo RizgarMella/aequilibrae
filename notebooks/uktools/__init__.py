@@ -11,6 +11,9 @@ management and styling in separate modules:
 - uktools.progress : progress_box scrolling live-log panel
 - uktools.report : summary_card unified one-page summaries
 - uktools.uk    : data loaders, city/district lookups, screenlines, focus maps
+- uktools.crs   : working-CRS (EPSG:27700) primitives and bbox helpers
+- uktools.gisio : shapefile export/import via embedded pyshp - no GDAL
+- uktools.bng   : pure-Python WGS84 <-> British National Grid transform
 """
 from .style import (STYLE, field, constant, flow_style, congestion_style,
                     diff_style, class_style)
@@ -21,6 +24,8 @@ from .uk import (SCREENLINES, load_roads, load_roads_geojson, load_zones,
                  load_cities, load_boundary, city, city_bbox, district,
                  district_bbox, screenline, crossings, corridor, focus_map,
                  add_underlay, compare_links, near, edit_links, close_direction, save_run, save_select_link_run)
+from .gisio import to_shapefile, read_shapefile
+from .bng import wgs84_to_bng, bng_to_wgs84
 
 __all__ = [
     "STYLE", "field", "constant", "flow_style", "congestion_style",
@@ -31,4 +36,5 @@ __all__ = [
     "load_cities", "load_boundary", "city", "city_bbox", "district",
     "district_bbox", "screenline", "crossings", "corridor", "focus_map",
     "add_underlay", "compare_links", "near", "edit_links", "close_direction", "save_run", "save_select_link_run",
+    "to_shapefile", "read_shapefile", "wgs84_to_bng", "bng_to_wgs84",
 ]

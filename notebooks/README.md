@@ -65,7 +65,14 @@ package next to the notebooks - `from uktools import *` gives every notebook:
 - **clean long runs**: `progress_box` scrollable bottom-pinned progress panels,
   and `summary_card` unified one-page HTML summaries;
 - **UK data management**: loaders for the embedded road networks, districts,
-  cities and boundary, plus screenlines and corridor selection.
+  cities and boundary, plus screenlines and corridor selection;
+- **GIS interchange without GDAL**: `to_shapefile(gdf, "out/links")` /
+  `read_shapefile(...)` write and read ESRI shapefiles via an embedded
+  pure-Python pyshp (`uktools/_vendor/`) - model outputs open straight in
+  QGIS/ArcGIS with no fiona/pyogrio install;
+- **pure-Python British National Grid**: `wgs84_to_bng` / `bng_to_wgs84`
+  (EPSG:4326 <-> 27700, OS Helmert + Transverse Mercator, metre-accurate,
+  A/B-tested against pyproj) - coordinate math with zero external pieces.
 
 Render cells are decoupled from compute cells throughout - restyling a map
 re-runs in a second without recomputing the model. On networks that block
